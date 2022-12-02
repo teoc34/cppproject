@@ -1,7 +1,18 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
+#include<string>
 #include<string.h>
 using namespace std;
+
+char* readDynamicCommmand() {
+	char* value;
+	char buffer[1000];
+	cout << endl << "Insert your command " << endl;
+	fgets(buffer, sizeof(buffer), stdin);
+	value = new char[strlen(buffer) + 1];
+	strcpy(value, buffer);
+	return value;
+}
 //this functions are made to edit the input of the user
 
 //this function is from the first homework
@@ -31,50 +42,54 @@ char* removeSpaces(const char* text) {
 	return newresult;
 }
 
-char* toCapsLock (const char* text)
+char* toCapsLock(const char* text)
 {
-    char* result = new char[strlen(text) + 1];
+	char* result = new char[strlen(text) + 1];
 	strcpy(result, text);
-    int i=0, n = strlen(text);
-	while(i<=n){
-        if(text[i]>='a'&&text[i]<='z')
-            result[i]=text[i]-32;
-        else 
-            result[i]=text[i];
-    }
-    return result;
+	int i = 0, n = strlen(text);
+	while (i <= n) {
+		if (text[i] >= 'a' && text[i] <= 'z')
+			result[i] = text[i] - 32;
+		else
+			result[i] = text[i];
+		i++;
+	}
+	return result;
 }
 
 //this function will get the function
 //from the user's command
-char* commandToFunction(char* text){
-    char buffer[50];
-    int i=0;
-    while(text[i]!='('){
-        buffer[i]=text[i];
-        i++;
-    }
-    buffer[i]='/n';
-    char* function = new char[i];
-    strcpy(function, buffer);
-    
-    char* newFunction = new char[i];
+char commandToFunction(char* text) {
+	char buffer[1000];
+	int i = 0;
+	while (text[i] != '(') {
+		buffer[i] = text[i];
+		i++;
+	}
+	buffer[i] = '\0';
+
+	char* function = new char[i+1];
+	strcpy(function, buffer);
+
+	char* newFunction = new char[i+1];
 	newFunction = removeSpaces(function);
 	delete[] function;
-	
-    function = toCapsLock(newFunction);
+
+	char* finalFunction = new char[i + 1];
+	finalFunction = toCapsLock(newFunction);
 	delete[] newFunction;
-	return function;
+	
+	function = finalFunction;
+	delete[] finalFunction;
+	return *function;
 }
 
 //this function will write on the screen
 //the function requested by the user
-void throwFunction(char* text){
-    cout<<endl<<commandToFunction;
+void throwFunction(char* text) {
+	cout << endl << commandToFunction(text);
 }
-int main(){
-    cout<<"Insert your command";
-    char text[100];
-    cin>>text;
-    throwFunction(text);
+int main() {
+	throwFunction(readDynamicCommmand());
+	return 0;
 }
