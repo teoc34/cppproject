@@ -59,7 +59,7 @@ char* toCapsLock(const char* text)
 
 //this function will get the function
 //from the user's command
-char commandToFunction(char* text) {
+char* commandToFunction(char* text) {
 	char buffer[1000];
 	int i = 0;
 	while (text[i] != '(') {
@@ -68,20 +68,16 @@ char commandToFunction(char* text) {
 	}
 	buffer[i] = '\0';
 
-	char* function = new char[i+1];
+	char* function = new char[i + 1];
 	strcpy(function, buffer);
 
-	char* newFunction = new char[i+1];
+	char* newFunction = new char[i + 1];
 	newFunction = removeSpaces(function);
 	delete[] function;
-
 	char* finalFunction = new char[i + 1];
 	finalFunction = toCapsLock(newFunction);
 	delete[] newFunction;
-	
-	function = finalFunction;
-	delete[] finalFunction;
-	return *function;
+	return finalFunction;
 }
 
 //this function will write on the screen
