@@ -3,6 +3,18 @@
 #include<string>
 #include<string.h>
 using namespace std;
+enum OrderType { Coffee, Water, Sweets, Juice}
+class CoffeeShop
+{
+    
+public:
+    string CoffeeShopLocation="Calea Victoriei";
+    string *Departments="Marketing";
+    string *Employees="Andrei";
+    int Orders=0;
+    int Order_Item=1;
+    OrderType type=Coffee;
+}
 
 char* readDynamicCommmand() {
 	char* value;
