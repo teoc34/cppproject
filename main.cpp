@@ -7,65 +7,76 @@ using namespace std;
 
 class Table
 {
-    string* collumnName=nullptr;
-	int noOfCollumns=0;
-	string* collumnType=nullptr;
-	int* dimensionOfData=nullptr;
-	int** dataInt=nullptr;
-	string** dataText=nullptr;
-	float** dataFloat=nullptr;
+	string* collumnName = nullptr;
+	int noOfCollumns = 0;
+	string* collumnType = nullptr;
+	int* dimensionOfData = nullptr;
+	int** dataInt = nullptr;
+	string** dataText = nullptr;
+	float** dataFloat = nullptr;
 public:
-	void setCollumnName(string name){
-		this->noOfCollumns+=1;
-		this->collumnName[noOfCollumns]=name;
+	void setCollumnName(string name) {
+		this->noOfCollumns += 1;
+		this->collumnName[noOfCollumns] = name;
 	}
 
-	void setCollumnType(string type){
-		this->collumnType[noOfCollumns]=type;  
+	void setCollumnType(string type) {
+		this->collumnType[noOfCollumns] = type;
 	}
 
-	void setdimensionOfData(int dimension){
-		this->dimensionOfData[noOfCollumns]=dimension;
+	void setdimensionOfData(int dimension) {
+		this->dimensionOfData[noOfCollumns] = dimension;
 	}
 
-	string getCollumnName(int index){
-		if(index<=noOfCollumns)
+	string getCollumnName(int index) {
+		if (index <= noOfCollumns)
 			return this->collumnName[index];
 	}
 
-	string getTypeOfCollumnByIndex(int index){
-			if(index<=noOfCollumns)
+	string getTypeOfCollumnByIndex(int index) {
+		if (index <= noOfCollumns)
 			return this->collumnName[index];
 	}
 
-	string getTypeOfCollumByName(string name){
-		int pp=0;
-		for(int i=1;i<=noOfCollumns; i++){
-			if(this->collumnName[i]==name){
+	string getTypeOfCollumByName(string name) {
+		int pp = 0;
+		for (int i = 1; i <= noOfCollumns; i++) {
+			if (this->collumnName[i] == name) {
 				return this->collumnType[i];
-				pp=1;
+				pp = 1;
 			}
 		}
-		if(pp==0)
+		if (pp == 0)
 			return "No collumn with this name";
 	}
 
-	~Table(){
-		if(this->collumnName != nullptr)
+	~Table() {
+		if (this->collumnName != nullptr)
 			delete[] this->collumnName;
-		if (this->collumnType != nullptr )
+		if (this->collumnType != nullptr)
 			delete[] this->collumnType;
-		if (this->dimensionOfData != nullptr )
+		if (this->dimensionOfData != nullptr)
 			delete[] this->dimensionOfData;
-		if (this->dataInt != nullptr )
+		if (this->dataInt != nullptr)
 			delete[] this->dataInt;
-		if (this->dataText != nullptr )
+		if (this->dataText != nullptr)
 			delete[] this->dataText;
-		if (this->dataFloat != nullptr )
+		if (this->dataFloat != nullptr)
 			delete[] this->dataFloat;
 	}
+	//the default value will be on the [0] of each data matrix
+	Table(string* nameOfCollumn, string collumnType, int dimensionOfData, int defaultValue) {//the constructor for type int data of collumn
 
-	Table(string* nameOfCollumn,  )
+	}
+
+	Table(string* nameOfCollumn, string collumnType, int dimensionOfData, float defaultValue) {//the constructor for type float data of collumn
+
+	}
+
+	Table(string* nameOfCollumn, string collumnType, int dimensionOfData, string defaultValue) {//the constructor for type text data of collumn
+
+	}
+
 
 
 };
@@ -87,7 +98,6 @@ char* readDynamicCommmand() {
 char* removeSpaces(const char* text) {
 	char* result = new char[strlen(text) + 1];
 	strcpy(result, text);
-
 	int k = 0;
 	while (result[k] == ' ') {
 		result++;
@@ -123,33 +133,84 @@ char* toCapsLock(const char* text)
 	return result;
 }
 
+bool paranthesisAccurateCreateTable(char* text) {
+	//for number of paranthesis
+	int rightParanthesis = 0; //the number of ")"
+	int leftParanthesis = 0; // the number of "("
+	int i = 0;
+	while (text[i] != NULL) {
+		if (text[i] == '(')
+			leftParanthesis++;
+		if (text[i] == ')')
+			rightParanthesis++;
+		i++;
+	}
+	if (leftParanthesis == rightParanthesis)
+		return true;
+	return false; 
+}
+
+bool createTableCommand(char* text, char* name) {
+	
+	return true;//if input conditions are respected
+	return false;//if the user wrote an inaccurate command
+}
+
 //this function will get the function
 //from the user's command
 char* commandToFunction(char* text) {
-	char buffer[1000];
-	int i = 0;
-	while (text[i] != '(') {
-		buffer[i] = text[i];
-		i++;
+	//for create table function
+	char* wrongcommandanswer = new char[3];
+	strcpy(wrongcommandanswer, "-1");
+	if (strstr(text, "(")) { //means the function is for creating a table, thus it has paranthesis
+		char buffer[1000];
+		int i = 0;
+		while (text[i] != '(') {
+			buffer[i] = text[i];
+			i++;
+		}
+		buffer[i] = '\0';
+
+		char* function = new char[i + 1];
+		strcpy(function, buffer);
+
+		char* newFunction = new char[i + 1];
+		newFunction = removeSpaces(function);
+		delete[] function;
+		char* finalFunction = new char[i + 1];
+		finalFunction = toCapsLock(newFunction);
+		delete[] newFunction;
+		//finalfunction has the following form: CREATETABLENAMEOFTABLE
+		//we substract the command to keep the NAMEOFTABLE
+		if (!(strstr(finalFunction, "CREATETABLE"))) {
+			//if the user mispelled the comand
+			return wrongcommandanswer;
+		}
+		else {
+			finalFunction= finalFunction + 11;
+			char* copyOfText = new char[strlen(text) + 1];
+			strcpy(copyOfText, text);
+			bool redlight = paranthesisAccurateCreateTable(strchr(copyOfText, '('));
+			if (!redlight)
+			{
+				bool doubleLight=createTableCommand(strchr(copyOfText, '('), finalFunction);
+				if (doubleLight)//if createTableCommand returns true - meaning there weren't any problems in creating the table - then we show the message for table creation
+					return finalFunction;//finalFunction is the name of the table
+				else return wrongcommandanswer;
+			}
+			else return wrongcommandanswer;
+		}
+
 	}
-	buffer[i] = '\0';
-
-	char* function = new char[i + 1];
-	strcpy(function, buffer);
-
-	char* newFunction = new char[i + 1];
-	newFunction = removeSpaces(function);
-	delete[] function;
-	char* finalFunction = new char[i + 1];
-	finalFunction = toCapsLock(newFunction);
-	delete[] newFunction;
-	return finalFunction;
 }
 
 //this function will write on the screen
 //the function requested by the user
 void throwFunction(char* text) {
-	cout << endl << commandToFunction(text);
+	while (commandToFunction(text) == "-1") {
+		cout << endl << "Incorrect command. Please try again";
+	}
+	cout << endl << "Table " << commandToFunction(text) << " created.";
 }
 int main() {
 	throwFunction(readDynamicCommmand());
