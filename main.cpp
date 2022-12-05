@@ -3,18 +3,72 @@
 #include<string>
 #include<string.h>
 using namespace std;
-enum OrderType { Coffee, Water, Sweets, Juice}
-class CoffeeShop
+
+
+class Table
 {
-    
+    string* collumnName=nullptr;
+	int noOfCollumns=0;
+	string* collumnType=nullptr;
+	int* dimensionOfData=nullptr;
+	int** dataInt=nullptr;
+	string** dataText=nullptr;
+	float** dataFloat=nullptr;
 public:
-    string CoffeeShopLocation="Calea Victoriei";
-    string *Departments="Marketing";
-    string *Employees="Andrei";
-    int Orders=0;
-    int Order_Item=1;
-    OrderType type=Coffee;
-}
+	void setCollumnName(string name){
+		this->noOfCollumns+=1;
+		this->collumnName[noOfCollumns]=name;
+	}
+
+	void setCollumnType(string type){
+		this->collumnType[noOfCollumns]=type;  
+	}
+
+	void setdimensionOfData(int dimension){
+		this->dimensionOfData[noOfCollumns]=dimension;
+	}
+
+	string getCollumnName(int index){
+		if(index<=noOfCollumns)
+			return this->collumnName[index];
+	}
+
+	string getTypeOfCollumnByIndex(int index){
+			if(index<=noOfCollumns)
+			return this->collumnName[index];
+	}
+
+	string getTypeOfCollumByName(string name){
+		int pp=0;
+		for(int i=1;i<=noOfCollumns; i++){
+			if(this->collumnName[i]==name){
+				return this->collumnType[i];
+				pp=1;
+			}
+		}
+		if(pp==0)
+			return "No collumn with this name";
+	}
+
+	~Table(){
+		if(this->collumnName != nullptr)
+			delete[] this->collumnName;
+		if (this->collumnType != nullptr )
+			delete[] this->collumnType;
+		if (this->dimensionOfData != nullptr )
+			delete[] this->dimensionOfData;
+		if (this->dataInt != nullptr )
+			delete[] this->dataInt;
+		if (this->dataText != nullptr )
+			delete[] this->dataText;
+		if (this->dataFloat != nullptr )
+			delete[] this->dataFloat;
+	}
+
+	Table(string* nameOfCollumn,  )
+
+
+};
 
 char* readDynamicCommmand() {
 	char* value;
