@@ -1,3 +1,5 @@
+//6.12.2022 - create table functions, the rest to be written soon
+
 #define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
 #include<string>
