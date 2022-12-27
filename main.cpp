@@ -1,4 +1,3 @@
-
 #define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
 #include<string>
@@ -25,7 +24,7 @@ class Table
 
 public:
 
-	//the default value will be on the [0] of each data matrix
+	//-------------------------*Constructors*------------------------------------------------------------
 	Table(string nameOfCollumn, string collumntype, int dimensionofdata, int defaultvalue) 
 		: collumnName(nameOfCollumn), 
 		collumnType(collumntype), 
@@ -57,6 +56,8 @@ public:
 	}
 
 
+	//---------------------------*Setters and Getters*-----------------------------------------
+
 	void setCollumnName(string name) {
 		this->indexCollumn += 1;
 		this->collumnName = name;
@@ -73,7 +74,7 @@ public:
 	string getCollumnNamebyIndex(int index) {
 		if (this->indexCollumn == index)
 			return this->collumnName;
-		else return "0"; //"0" means the collumn is not the one the users is seeking, is the condition in a subsequent if - in the program
+		else return "0"; //"0" means the collumn is not the one the user is seeking, is the condition in a subsequent if - in the program
 	}
 
 	string getTypeOfCollumnByIndex(int index) {
@@ -89,6 +90,12 @@ public:
 		return "0";
 	}
 
+	void setNameOfTable(string name) {
+		this->nameOfTable = name;
+	}
+
+	//--------------------*Destructor*---------------------------
+
 	~Table() {
 		if (this->dataInt != nullptr)
 			delete[] this->dataInt;
@@ -100,6 +107,40 @@ public:
 
 };
 
+//---------------------------------------*End of Class Definition*------------------------------------------------
+
+
+//this function splits the command into words so it can be analyzed
+
+
+int Split(const char* s, char delimiter, const char** words) { 
+	// const char** words is the array that contains the words of the function
+	int numWords = 0;
+	const char* start = s;
+	const char* end = s;
+	while (*end != '\0') {
+		if (*end == delimiter) {
+			int length = end - start;
+			char* word = new char[length + 1];
+			strncpy(word, start, length);
+			word[length] = '\0';
+			words[numWords] = word;
+			numWords++;
+			start = end + 1;
+		}
+		end++;
+	}
+	if (start != end) {
+		int length = end - start;
+		char* word = new char[length + 1];
+		strncpy(word, start, length);
+		word[length] = '\0';
+		words[numWords] = word;
+		numWords++;
+	}
+	return numWords;
+}
+
 char* readDynamicCommmand() {
 	char* value;
 	char buffer[1000];
@@ -109,11 +150,14 @@ char* readDynamicCommmand() {
 	strcpy(value, buffer);
 	return value;
 }
+
+
 //these functions are made to edit the input of the user
 
 //this function is from the first homework
-//will edit the user's input so it can be used in the code
-//this function will remove excessive spaces
+//removeSpaces will edit the user's input so it can be used in the code
+//removeSpaces will remove excessive spaces
+//USED ONLY for Drop table function
 char* removeSpaces(const char* text) {
 	char* result = new char[strlen(text) + 1];
 	strcpy(result, text);
@@ -137,22 +181,8 @@ char* removeSpaces(const char* text) {
 	return newresult;
 }
 
-char* toCapsLock(const char* text)
-{
-	char* result = new char[strlen(text) + 1];
-	strcpy(result, text);
-	int i = 0, n = strlen(text);
-	while (i <= n) {
-		if (text[i] >= 'a' && text[i] <= 'z')
-			result[i] = text[i] - 32;
-		else
-			result[i] = text[i];
-		i++;
-	}
-	return result;
-}
 
-bool paranthesisAccurateCreateTable(char* text) {
+bool paranthesisAccurate(char* text) {
 	//for number of paranthesis
 	int rightParanthesis = 0; //the number of ")"
 	int leftParanthesis = 0; // the number of "("
@@ -169,69 +199,94 @@ bool paranthesisAccurateCreateTable(char* text) {
 	return false;
 }
 
-bool createTableCommand(char* text, char* name) {
-
-	return true;//if input conditions are respected
-	return false;//if the user wrote an inaccurate command
-}
-
-//this function will get the function
-//from the user's command
-char* commandToFunction(char* text) {
-	//for create table function
-	char* wrongcommandanswer = new char[3];
-	strcpy(wrongcommandanswer, "-1");
-	if (strstr(text, "(")) { //means the function is for creating a table, thus it has paranthesis
-		char buffer[1000];
-		int i = 0;
-		while (text[i] != '(') {
-			buffer[i] = text[i];
-			i++;
-		}
-		buffer[i] = '\0';
-
-		char* function = new char[i + 1];
-		strcpy(function, buffer);
-
-		char* newFunction = new char[i + 1];
-		newFunction = removeSpaces(function);
-		delete[] function;
-		char* finalFunction = new char[i + 1];
-		finalFunction = toCapsLock(newFunction);
-		delete[] newFunction;
-		//finalfunction has the following form: CREATETABLENAMEOFTABLE
-		//we substract the command to keep the NAMEOFTABLE
-		if (!(strstr(finalFunction, "CREATETABLE"))) {
-			//if the user mispelled the comand
-			return wrongcommandanswer;
-		}
-		else {
-			finalFunction = finalFunction + 11;
-			char* copyOfText = new char[strlen(text) + 1];
-			strcpy(copyOfText, text);
-			bool redlight = paranthesisAccurateCreateTable(strchr(copyOfText, '('));
-			if (!redlight)
+void createTable(char* words, int numWords,  Table& a){
+	for (int i = 4; i <= numWords, i = i + 4) {
+		for (int j = 0; j < 4; j++) {
+			while (strchr(words[i+j], '(')!=nullptr)
+				words[i] += 1;
+			while (strchr(words[i + j], ')') != nullptr || strchr(words[i + j], ',') != nullptr)
 			{
-				bool doubleLight = createTableCommand(strchr(copyOfText, '('), finalFunction);
-				if (doubleLight)//if createTableCommand returns true - meaning there weren't any problems in creating the table - then we show the message for table creation
-					return finalFunction;//finalFunction is the name of the table
-				else return wrongcommandanswer;
+				char* newword = new char[strlen(words[i + j])];
+				for (k = 0; k < strlen(words[i + j]) - 1; k++) {
+					newword[k] = words[i + j][k];
+				}
+				newword[k] = '\n';
 			}
-			else return wrongcommandanswer;
+			delete[] words[i + j];
+			strcpy(words[i+j], newword);
+			delete[]  newword;
+	}
+}
+
+char* commandToFunctionCreateTable(char* text, Table& a) { //THIS CODE DOESN'T ACCEPT THE [IF NOT EXISTS] SECTION OF COMMAND 
+	// we split the command into words
+	const char* words;
+	int numWords = Split(text, ' ', words); //words is passed through reference
+	if (numWords < 7 || strcmp(words[0], "CREATE") || strcmp(words[1], "TABLE")) //meaning we don't have either the name or at least a correctly defined collumn
+		return nullptr;
+	if (!paranthesisAccurate) //the number of paranthesis is not right
+		return nullptr;
+	if ((numWords - 3) % 4 != 0) // the number of paranthesis is correct, but the description of each collumn is incorrect || the name contains spaces
+		return nullptr;
+	char* wordsofCollumns;
+	int numWordsAfterCollumns = Split(strstr(text, "("), ' ', wordsofCollumns);
+	if (numWordsAfterCollumns % 4 != 0) //if the last "if" was overrun (in the case of both the name of the table and the description of collumns were written incorrectly)
+		return nullptr;
+	
+	//NOW we know the function was written correcly
+
+	
+	createTable(words, numWords, a);
+	return words[2];
+	
+}
+
+
+enum typeFunction { "CreateTable", "CreateIndex", "DropTable", "DropIndex", "DisplayIndex", "Insert", "Select", "Update"};
+//this enum will be used to give the user an idea of how the function must look like. 
+bool throwFunction(char* text, Table& a) {
+	
+	//we verify each possibility of function 
+	
+	if (strstr(text, "CREATE TABLE")) {
+		if (commandToFunctionCreateTable(text, a) != nullptr)
+		{
+			cout << endl << "Table " << commandToFunctionCreateTable(text, a) << " created.";
+			return 1;
 		}
-
 	}
-}
 
-//this function will write on the screen
-//the function requested by the user
-void throwFunction(char* text) {
-	while (commandToFunction(text) == "-1") {
-		cout << endl << "Incorrect command. Please try again";
+	else if (strstr(text, "CREATE INDEX")) {
+		return 1;
 	}
-	cout << endl << "Table " << commandToFunction(text) << " created.";
-}
+	else if (strstr(text, "DROP TABLE")) {
+		return 1;
+	}
+	else if (strstr(text, "DROP INDEX")) {
+		return 1;
+	}
+	else if (strstr(text, "DISPLAY INDEX")) {
+		return 1;
+	}
+	else if (strstr(text, "INSERT")) {
+		return 1;
+	}
+	else if (strstr(text, "SELECT")) {
+		return 1;
+	}
+	else if (strstr(text "UPDATE")) {
+		return 1;
+	}
+
+	cout << endl << "Incorrect command. Please try again";
+		return 0;
+	}
+
+
 int main() {
-	throwFunction(readDynamicCommmand());
+	Table* a;
+	while (! throwFunction(readDynamicCommmand(), a)) {
+		throwFunction(readDynamicCommmand(), a);
+	}
 	return 0;
 }
