@@ -200,14 +200,15 @@ bool paranthesisAccurate(char* text) {
 }
 
 void createTable(char* words, int numWords,  Table& a){
-	for (int i = 4; i <= numWords, i = i + 4) {
+	for (int i = 4; i <= numWords; i = i + 4) {
 		for (int j = 0; j < 4; j++) {
-			while (strchr(words[i+j], '(')!=nullptr)
+			while (strstr(words[i+j], "(" )!=nullptr)
 				words[i] += 1;
 			while (strchr(words[i + j], ')') != nullptr || strchr(words[i + j], ',') != nullptr)
 			{
 				char* newword = new char[strlen(words[i + j])];
-				for (k = 0; k < strlen(words[i + j]) - 1; k++) {
+				int k;
+				for ( k = 0; k < strlen(words[i + j]) - 1; k++) {
 					newword[k] = words[i + j][k];
 				}
 				newword[k] = '\n';
