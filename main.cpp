@@ -1,4 +1,3 @@
-//6.12.2022 - create table functions, the rest to be written soon
 
 #define _CRT_SECURE_NO_WARNINGS
 #include<iostream>
@@ -9,56 +8,88 @@ using namespace std;
 
 class Table
 {
-	string* collumnName = nullptr;
-	int noOfCollumns = 0;
-	string* collumnType = nullptr;
-	int* dimensionOfData = nullptr;
-	int** dataInt = nullptr;
-	string** dataText = nullptr;
-	float** dataFloat = nullptr;
+	string nameOfTable;
+	string collumnName;
+	string collumnType;
+	int indexCollumn = 0;
+	int dimensionOfData;
+	int* dataInt = nullptr;
+	int defaultValueInt = 0;
+	string* dataText = nullptr;
+	string defaultValueText;
+	float* dataFloat = nullptr;
+	float defaultValueFloat;
+	bool ifFloat = 0, ifText = 0, ifInt = 0;
+	//the ifInt, ifText, ifFloat variable show if the collumn of the table is type int, type float or type string
+
+
 public:
+
+	//the default value will be on the [0] of each data matrix
+	Table(string nameOfCollumn, string collumntype, int dimensionofdata, int defaultvalue) 
+		: collumnName(nameOfCollumn), 
+		collumnType(collumntype), 
+		dimensionOfData(dimensionofdata), 
+		defaultValueInt(defaultvalue){//the constructor for type int data of collumn
+		this->ifInt = true;
+		delete[] this->dataFloat;
+		delete[] this->dataText;
+	}
+
+	Table(string nameOfCollumn, string collumntype, int dimensionofdata, float defaultvalue) 
+		: collumnName(nameOfCollumn), 
+		collumnType(collumntype), 
+		dimensionOfData(dimensionofdata), 
+		defaultValueFloat(defaultvalue) {//the constructor for type float data of collumn
+		this->ifFloat = true;
+		delete[] this->dataText;
+		delete[] this->dataInt;
+	}
+
+	Table(string nameOfCollumn, string collumntype, int dimensionofdata, string defaultvalue) 
+		: collumnName(nameOfCollumn), 
+		collumnType(collumntype), 
+		dimensionOfData(dimensionofdata), 
+		defaultValueText(defaultvalue) {//the constructor for type text data of collumn
+		this->ifText = true;
+		delete[] this->dataFloat;
+		delete[] this->dataInt;
+	}
+
+
 	void setCollumnName(string name) {
-		this->noOfCollumns += 1;
-		this->collumnName[noOfCollumns] = name;
+		this->indexCollumn += 1;
+		this->collumnName = name;
 	}
 
 	void setCollumnType(string type) {
-		this->collumnType[noOfCollumns] = type;
+		this->collumnType = type;
 	}
 
 	void setdimensionOfData(int dimension) {
-		this->dimensionOfData[noOfCollumns] = dimension;
+		this->dimensionOfData = dimension;
 	}
 
-	string getCollumnName(int index) {
-		if (index <= noOfCollumns)
-			return this->collumnName[index];
+	string getCollumnNamebyIndex(int index) {
+		if (this->indexCollumn == index)
+			return this->collumnName;
+		else return "0"; //"0" means the collumn is not the one the users is seeking, is the condition in a subsequent if - in the program
 	}
 
 	string getTypeOfCollumnByIndex(int index) {
-		if (index <= noOfCollumns)
-			return this->collumnName[index];
+		if (this->indexCollumn == index)
+			return this->collumnType;
+		else return "0";
 	}
 
 	string getTypeOfCollumByName(string name) {
-		int pp = 0;
-		for (int i = 1; i <= noOfCollumns; i++) {
-			if (this->collumnName[i] == name) {
-				return this->collumnType[i];
-				pp = 1;
+			if (this->collumnName == name) {
+				return this->collumnType;
 			}
-		}
-		if (pp == 0)
-			return "No collumn with this name";
+		return "0";
 	}
 
 	~Table() {
-		if (this->collumnName != nullptr)
-			delete[] this->collumnName;
-		if (this->collumnType != nullptr)
-			delete[] this->collumnType;
-		if (this->dimensionOfData != nullptr)
-			delete[] this->dimensionOfData;
 		if (this->dataInt != nullptr)
 			delete[] this->dataInt;
 		if (this->dataText != nullptr)
@@ -66,20 +97,6 @@ public:
 		if (this->dataFloat != nullptr)
 			delete[] this->dataFloat;
 	}
-	//the default value will be on the [0] of each data matrix
-	Table(string* nameOfCollumn, string collumnType, int dimensionOfData, int defaultValue) {//the constructor for type int data of collumn
-
-	}
-
-	Table(string* nameOfCollumn, string collumnType, int dimensionOfData, float defaultValue) {//the constructor for type float data of collumn
-
-	}
-
-	Table(string* nameOfCollumn, string collumnType, int dimensionOfData, string defaultValue) {//the constructor for type text data of collumn
-
-	}
-
-
 
 };
 
@@ -92,7 +109,7 @@ char* readDynamicCommmand() {
 	strcpy(value, buffer);
 	return value;
 }
-//this functions are made to edit the input of the user
+//these functions are made to edit the input of the user
 
 //this function is from the first homework
 //will edit the user's input so it can be used in the code
@@ -149,11 +166,11 @@ bool paranthesisAccurateCreateTable(char* text) {
 	}
 	if (leftParanthesis == rightParanthesis)
 		return true;
-	return false; 
+	return false;
 }
 
 bool createTableCommand(char* text, char* name) {
-	
+
 	return true;//if input conditions are respected
 	return false;//if the user wrote an inaccurate command
 }
@@ -189,13 +206,13 @@ char* commandToFunction(char* text) {
 			return wrongcommandanswer;
 		}
 		else {
-			finalFunction= finalFunction + 11;
+			finalFunction = finalFunction + 11;
 			char* copyOfText = new char[strlen(text) + 1];
 			strcpy(copyOfText, text);
 			bool redlight = paranthesisAccurateCreateTable(strchr(copyOfText, '('));
 			if (!redlight)
 			{
-				bool doubleLight=createTableCommand(strchr(copyOfText, '('), finalFunction);
+				bool doubleLight = createTableCommand(strchr(copyOfText, '('), finalFunction);
 				if (doubleLight)//if createTableCommand returns true - meaning there weren't any problems in creating the table - then we show the message for table creation
 					return finalFunction;//finalFunction is the name of the table
 				else return wrongcommandanswer;
