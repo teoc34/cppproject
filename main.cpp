@@ -25,30 +25,30 @@ class Table
 public:
 
 	//-------------------------*Constructors*------------------------------------------------------------
-	Table(string nameOfCollumn, string collumntype, int dimensionofdata, int defaultvalue) 
-		: collumnName(nameOfCollumn), 
-		collumnType(collumntype), 
-		dimensionOfData(dimensionofdata), 
-		defaultValueInt(defaultvalue){//the constructor for type int data of collumn
+	Table(string nameOfCollumn, string collumntype, int dimensionofdata, int defaultvalue)
+		: collumnName(nameOfCollumn),
+		collumnType(collumntype),
+		dimensionOfData(dimensionofdata),
+		defaultValueInt(defaultvalue) {//the constructor for type int data of collumn
 		this->ifInt = true;
 		delete[] this->dataFloat;
 		delete[] this->dataText;
 	}
 
-	Table(string nameOfCollumn, string collumntype, int dimensionofdata, float defaultvalue) 
-		: collumnName(nameOfCollumn), 
-		collumnType(collumntype), 
-		dimensionOfData(dimensionofdata), 
+	Table(string nameOfCollumn, string collumntype, int dimensionofdata, float defaultvalue)
+		: collumnName(nameOfCollumn),
+		collumnType(collumntype),
+		dimensionOfData(dimensionofdata),
 		defaultValueFloat(defaultvalue) {//the constructor for type float data of collumn
 		this->ifFloat = true;
 		delete[] this->dataText;
 		delete[] this->dataInt;
 	}
 
-	Table(string nameOfCollumn, string collumntype, int dimensionofdata, string defaultvalue) 
-		: collumnName(nameOfCollumn), 
-		collumnType(collumntype), 
-		dimensionOfData(dimensionofdata), 
+	Table(string nameOfCollumn, string collumntype, int dimensionofdata, string defaultvalue)
+		: collumnName(nameOfCollumn),
+		collumnType(collumntype),
+		dimensionOfData(dimensionofdata),
 		defaultValueText(defaultvalue) {//the constructor for type text data of collumn
 		this->ifText = true;
 		delete[] this->dataFloat;
@@ -84,9 +84,9 @@ public:
 	}
 
 	string getTypeOfCollumByName(string name) {
-			if (this->collumnName == name) {
-				return this->collumnType;
-			}
+		if (this->collumnName == name) {
+			return this->collumnType;
+		}
 		return "0";
 	}
 
@@ -113,7 +113,7 @@ public:
 //this function splits the command into words so it can be analyzed
 
 
-int Split(const char* s, char delimiter, const char** words) { 
+int Split( char* s, char delimiter, char** words) {
 	// const char** words is the array that contains the words of the function
 	int numWords = 0;
 	const char* start = s;
@@ -199,95 +199,97 @@ bool paranthesisAccurate(char* text) {
 	return false;
 }
 
-void createTable(char* words, int numWords,  Table& a){
+void createTable(char* words, int numWords, Table& a) {
 	for (int i = 4; i <= numWords; i = i + 4) {
 		for (int j = 0; j < 4; j++) {
-			while (strstr(words[i+j], "(" )!=nullptr)
-				words[i] += 1;
-			while (strchr(words[i + j], ')') != nullptr || strchr(words[i + j], ',') != nullptr)
+			while (strstr(&words[i + j], "(") != nullptr) {
+				cout << words[i];
+				j++;
+			}
+				
+			/*while (strstr(&words[i + j], ")") != nullptr || strstr(&words[i + j], ", ") != nullptr)
 			{
-				char* newword = new char[strlen(words[i + j])];
+				char* newword = new char[strlen(&words[i + j])];
 				int k;
-				for ( k = 0; k < strlen(words[i + j]) - 1; k++) {
-					newword[k] = words[i + j][k];
+				for (k = 0; k < strlen(&words[i + j]) - 1; k++) {
+					//newword[k] = &(words[i + j])[k];
 				}
 				newword[k] = '\n';
-			}
-			delete[] words[i + j];
-			strcpy(words[i+j], newword);
-			delete[]  newword;
-	}
-}
-
-char* commandToFunctionCreateTable(char* text, Table& a) { //THIS CODE DOESN'T ACCEPT THE [IF NOT EXISTS] SECTION OF COMMAND 
-	// we split the command into words
-	const char* words;
-	int numWords = Split(text, ' ', words); //words is passed through reference
-	if (numWords < 7 || strcmp(words[0], "CREATE") || strcmp(words[1], "TABLE")) //meaning we don't have either the name or at least a correctly defined collumn
-		return nullptr;
-	if (!paranthesisAccurate) //the number of paranthesis is not right
-		return nullptr;
-	if ((numWords - 3) % 4 != 0) // the number of paranthesis is correct, but the description of each collumn is incorrect || the name contains spaces
-		return nullptr;
-	char* wordsofCollumns;
-	int numWordsAfterCollumns = Split(strstr(text, "("), ' ', wordsofCollumns);
-	if (numWordsAfterCollumns % 4 != 0) //if the last "if" was overrun (in the case of both the name of the table and the description of collumns were written incorrectly)
-		return nullptr;
-	
-	//NOW we know the function was written correcly
-
-	
-	createTable(words, numWords, a);
-	return words[2];
-	
-}
-
-
-enum typeFunction { "CreateTable", "CreateIndex", "DropTable", "DropIndex", "DisplayIndex", "Insert", "Select", "Update"};
-//this enum will be used to give the user an idea of how the function must look like. 
-bool throwFunction(char* text, Table& a) {
-	
-	//we verify each possibility of function 
-	
-	if (strstr(text, "CREATE TABLE")) {
-		if (commandToFunctionCreateTable(text, a) != nullptr)
-		{
-			cout << endl << "Table " << commandToFunctionCreateTable(text, a) << " created.";
-			return 1;
+			}*/
+			/*delete[] words[i + j];
+			strcpy(words[i + j], newword);
+			delete[]  newword;*/
 		}
 	}
+}
 
-	else if (strstr(text, "CREATE INDEX")) {
-		return 1;
-	}
-	else if (strstr(text, "DROP TABLE")) {
-		return 1;
-	}
-	else if (strstr(text, "DROP INDEX")) {
-		return 1;
-	}
-	else if (strstr(text, "DISPLAY INDEX")) {
-		return 1;
-	}
-	else if (strstr(text, "INSERT")) {
-		return 1;
-	}
-	else if (strstr(text, "SELECT")) {
-		return 1;
-	}
-	else if (strstr(text "UPDATE")) {
-		return 1;
+char* commandToFunctionCreateTable(char* text, Table & a) { //THIS CODE DOESN'T ACCEPT THE [IF NOT EXISTS] SECTION OF COMMAND 
+		// we split the command into words
+		char** words;
+		int numWords = Split(text, ' ', words); //words is passed through reference
+		if (numWords < 7 || strcmp(words[0], "CREATE") || strcmp(words[1], "TABLE")) //meaning we don't have either the name or at least a correctly defined collumn
+			return nullptr;
+		if (!paranthesisAccurate) //the number of paranthesis is not right
+			return nullptr;
+		if ((numWords - 3) % 4 != 0) // the number of paranthesis is correct, but the description of each collumn is incorrect || the name contains spaces
+			return nullptr;
+		/*char* wordsofCollumns = nullptr;
+		int numWordsAfterCollumns = Split(strstr(text, "("), ' ', &wordsofCollumns);
+		if (numWordsAfterCollumns % 4 != 0) //if the last "if" was overrun (in the case of both the name of the table and the description of collumns were written incorrectly)
+			return nullptr;*/
+
+		//NOW we know the function was written correcly
+
+		createTable(*words, numWords, a);
+		return words[2];
+
 	}
 
-	cout << endl << "Incorrect command. Please try again";
+
+	//this enum will be used to give the user an idea of how the function must look like. 
+	bool throwFunction(char* text, Table & a) {
+
+		//we verify each possibility of function 
+
+		if (strstr(text, "CREATE TABLE")) {
+			if (commandToFunctionCreateTable(text, a) != nullptr)
+			{
+				cout << endl << "Table " << commandToFunctionCreateTable(text, a) << " created.";
+				return 1;
+			}
+		}
+
+		else if (strstr(text, "CREATE INDEX")) {
+			return 1;
+		}
+		else if (strstr(text, "DROP TABLE")) {
+			return 1;
+		}
+		else if (strstr(text, "DROP INDEX")) {
+			return 1;
+		}
+		else if (strstr(text, "DISPLAY INDEX")) {
+			return 1;
+		}
+		else if (strstr(text, "INSERT")) {
+			return 1;
+		}
+		else if (strstr(text, "SELECT")) {
+			return 1;
+		}
+		else if (strstr(text, "UPDATE")) {
+			return 1;
+		}
+
+		cout << endl << "Incorrect command. Please try again";
 		return 0;
 	}
 
 
-int main() {
-	Table* a;
-	while (! throwFunction(readDynamicCommmand(), a)) {
-		throwFunction(readDynamicCommmand(), a);
+	int main() {
+		Table* a=nullptr;
+		while (!throwFunction(readDynamicCommmand(), *a)) {
+			throwFunction(readDynamicCommmand(), *a);
+		}
+		return 0;
 	}
-	return 0;
-}
